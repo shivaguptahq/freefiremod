@@ -372,3 +372,9 @@
     flex-basis: 210px;
   }
 }
+.apk-download-wrap {
+  width: 100%;
+}
+.apk-download-wrap-compact {
+  width: auto;
+}

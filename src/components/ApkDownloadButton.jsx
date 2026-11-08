@@ -1,5 +1,4 @@
-﻿import { useState } from 'react'
-import { DownloadIcon } from './Icons.jsx'
+﻿import { DownloadIcon } from './Icons.jsx'
 
 function toSafeFilename(value) {
   const base = (value || 'download').replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/^-+|-+$/g, '')
@@ -13,14 +12,11 @@ function getDownloadFileName(app) {
 }
 
 export default function ApkDownloadButton({ app, className = '', compact = false, stopPropagation = false }) {
-  const [error, setError] = useState(false)
   const available = Boolean(app?.apkFile && app?.fileSizeBytes > 0 && app?.apkAvailable && !app?.isDemo)
   const filename = getDownloadFileName(app)
 
   function onClick(event) {
     if (stopPropagation) event.stopPropagation()
-    if (!available) return
-    setError(false)
   }
 
   if (!available) {
@@ -48,13 +44,11 @@ export default function ApkDownloadButton({ app, className = '', compact = false
         rel="noopener"
         target="_self"
         onClick={onClick}
-        onError={() => setError(true)}
         aria-label={`Download ${app?.title || 'APK'} as ${filename}`}
       >
         <DownloadIcon size={compact ? 16 : 18} />
         <span>Download APK</span>
       </a>
-      {!compact && error ? <p className="apk-card-note apk-state-error" role="alert">The APK file could not be accessed. Please try again later.</p> : null}
     </div>
   )
 }
