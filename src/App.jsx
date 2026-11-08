@@ -12,11 +12,25 @@ import DisclaimerPage from './pages/DisclaimerPage.jsx'
 import DmcaPage from './pages/DmcaPage.jsx'
 import { initBackgroundAudio } from './components/backgroundAudio.js'
 
+function SpaRedirect() {
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const redirect = params.get('p')
+    if (!redirect) return
+    const base = import.meta.env.BASE_URL.replace(/\/$/, '')
+    const path = redirect.startsWith('/') ? redirect : `/${redirect}`
+    window.history.replaceState(null, '', `${base}${path}${window.location.hash}`)
+  }, [])
+  return null
+}
+
 export default function App() {
   useEffect(() => initBackgroundAudio(), [])
+  const basename = import.meta.env.BASE_URL
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
+      <SpaRedirect />
       <Routes>
         <Route element={<SiteLayout />}>
           <Route path="/" element={<Home />} />

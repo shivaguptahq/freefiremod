@@ -1,4 +1,11 @@
-﻿const APK_DATA_URL = '/assets/apks/data/apks.json'
+﻿const APK_DATA_URL = `${import.meta.env.BASE_URL}assets/apks/data/apks.json`
+
+function toAssetUrl(value) {
+  if (typeof value !== 'string' || !value) return value
+  if (/^(?:[a-z]+:)?\/\//i.test(value) || value.startsWith('data:') || value.startsWith('blob:')) return value
+  if (value.startsWith('/')) return `${import.meta.env.BASE_URL}${value.slice(1)}`
+  return value
+}
 
 const REQUIRED_FIELDS = [
   'id',
@@ -78,7 +85,7 @@ function normalizeApp(raw, index) {
       title: raw?.title ?? 'Untitled app',
       publisher: typeof raw?.publisher === 'string' ? raw.publisher : raw?.developer ?? '',
       isDemo: Boolean(raw?.isDemo),
-      icon: raw?.icon || getFallbackIcon(raw?.title),
+      icon: toAssetUrl(raw?.icon) || getFallbackIcon(raw?.title),
       shortDescription: raw?.shortDescription ?? '',
       description: raw?.description ?? '',
       category: raw?.category ?? 'Uncategorized',
@@ -90,8 +97,8 @@ function normalizeApp(raw, index) {
       lastUpdated: raw?.lastUpdated ?? '',
       rating: raw?.rating ?? 'N/A',
       featured: Boolean(raw?.featured),
-      screenshots,
-      apkFile,
+      screenshots: screenshots.map(toAssetUrl).filter(Boolean),
+      apkFile: toAssetUrl(apkFile),
       downloadFileName: typeof raw?.downloadFileName === 'string' && raw.downloadFileName.trim() ? raw.downloadFileName.trim() : '',
       distributionAuthorized,
       apkAvailable,

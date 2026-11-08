@@ -1,0 +1,19 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Redirecting…</title>
+    <script>
+      (function () {
+        var l = window.location;
+        var base = (l.pathname || '/').replace(/\/404\.html$/, '/');
+        if (!base.endsWith('/')) base += '/';
+        var path = l.pathname.slice(base.length - 1) || '/';
+        var search = l.search ? l.search + '&' : '?';
+        l.replace(base + search + 'p=' + encodeURIComponent(path + l.hash));
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>
