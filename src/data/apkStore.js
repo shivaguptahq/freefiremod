@@ -14,7 +14,6 @@ const REQUIRED_FIELDS = [
   'androidVersion',
   'size',
   'lastUpdated',
-  'downloads',
   'rating',
   'featured',
   'screenshots',
@@ -35,7 +34,7 @@ export function getFallbackIcon(title = 'App') {
 }
 
 export function getFallbackScreenshot() {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720"><rect width="1280" height="720" fill="#0B1933"/><rect x="48" y="48" width="1184" height="624" rx="24" fill="#101F3D" stroke="rgba(148,163,184,0.18)"/><text x="640" y="372" text-anchor="middle" font-family="Arial,sans-serif" font-size="36" fill="#71829F">Screenshot unavailable</text></svg>`
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="720" height="1280" viewBox="0 0 720 1280"><rect width="720" height="1280" fill="#0B1933"/><rect x="36" y="36" width="648" height="1208" rx="24" fill="#101F3D" stroke="rgba(148,163,184,0.18)"/><text x="360" y="652" text-anchor="middle" font-family="Arial,sans-serif" font-size="30" fill="#71829F">Screenshot unavailable</text></svg>`
   return `data:image/svg+xml;charset=UTF-8,${svg}`
 }
 
@@ -51,18 +50,33 @@ function normalizeApp(raw, index) {
       issues.push(`${raw?.id || raw?.slug || `index ${index}`}: missing ${field}`)
     }
   }
-  if (!Array.isArray(raw?.screenshots) || raw.screenshots.length < 5) {
-    issues.push(`${raw?.id || raw?.slug || `index ${index}`}: screenshots must contain at least 5 items`)
+  if (!Array.isArray(raw?.screenshots) || raw.screenshots.length < 1) {
+    issues.push(`${raw?.id || raw?.slug || `index ${index}`}: screenshots must contain at least 1 item`)
   }
 
   const screenshots = Array.isArray(raw?.screenshots) ? raw.screenshots.filter(Boolean) : []
-  const safeScreenshots = screenshots.length >= 5 ? screenshots : [...screenshots]
+  const fileSizeBytes = Number.isFinite(raw?.fileSizeBytes) ? raw.fileSizeBytes : 0
+  const apkFile = typeof raw?.apkFile === 'string' ? raw.apkFile : ''
+  const explicitAvailable = typeof raw?.apkAvailable === 'boolean' ? raw.apkAvailable : null
+  const distributionAuthorized = raw?.distributionAuthorized !== false
+  const apkAvailable = Boolean(
+    (explicitAvailable ?? true) && apkFile && fileSizeBytes > 0 && distributionAuthorized,
+  )
+  const defaultStatus = distributionAuthorized
+    ? 'APK file not available yet.'
+    : 'Download unavailable: redistribution authorization is not verified for this package.'
+  const apkStatus = typeof raw?.apkStatus === 'string' && raw.apkStatus.trim()
+    ? raw.apkStatus
+    : apkAvailable
+      ? 'APK file available.'
+      : defaultStatus
 
   return {
     app: {
       id: raw?.id ?? `app-${index}`,
       slug: raw?.slug ?? `app-${index}`,
       title: raw?.title ?? 'Untitled app',
+      publisher: typeof raw?.publisher === 'string' ? raw.publisher : raw?.developer ?? '',
       isDemo: Boolean(raw?.isDemo),
       icon: raw?.icon || getFallbackIcon(raw?.title),
       shortDescription: raw?.shortDescription ?? '',
@@ -74,14 +88,15 @@ function normalizeApp(raw, index) {
       androidVersion: raw?.androidVersion ?? '',
       size: raw?.size ?? '',
       lastUpdated: raw?.lastUpdated ?? '',
-      downloads: raw?.downloads ?? 'N/A',
       rating: raw?.rating ?? 'N/A',
       featured: Boolean(raw?.featured),
-      screenshots: safeScreenshots,
-      apkFile: raw?.apkFile ?? '',
-      apkAvailable: Boolean(raw?.apkAvailable),
-      apkStatus: raw?.apkStatus ?? 'APK file not available yet.',
-      fileSizeBytes: Number.isFinite(raw?.fileSizeBytes) ? raw.fileSizeBytes : 0,
+      screenshots,
+      apkFile,
+      downloadFileName: typeof raw?.downloadFileName === 'string' && raw.downloadFileName.trim() ? raw.downloadFileName.trim() : '',
+      distributionAuthorized,
+      apkAvailable,
+      apkStatus,
+      fileSizeBytes,
     },
     issues,
   }

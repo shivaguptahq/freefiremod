@@ -1,6 +1,7 @@
 ﻿import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { DownloadIcon, PackageIcon, StarIcon, TagIcon } from '../components/Icons.jsx'
+import { PackageIcon, StarIcon, TagIcon } from '../components/Icons.jsx'
+import ApkDownloadButton from '../components/ApkDownloadButton.jsx'
 import { formatLastUpdated, getApkBySlug, getFallbackIcon, getFallbackScreenshot } from '../data/apkStore.js'
 import { useDocumentMeta } from '../components/useDocumentMeta.js'
 import '../styles/apk-store.css'
@@ -87,7 +88,6 @@ export default function ApkDetailsPage() {
     )
   }
 
-  const downloadAvailable = app.apkAvailable && !app.isDemo
   const screenshots = Array.isArray(app.screenshots) ? app.screenshots.filter(Boolean) : []
 
   return (
@@ -108,6 +108,7 @@ export default function ApkDetailsPage() {
             />
             <div className="apk-detail-hero-copy">
               <h1 className="apk-detail-title">{app.title}</h1>
+              {app.publisher ? <p className="apk-detail-publisher">Published by {app.publisher}</p> : null}
               <p className="apk-detail-size">{app.size}</p>
             </div>
           </header>
@@ -159,20 +160,7 @@ export default function ApkDetailsPage() {
           </section>
 
           <section className="apk-detail-download" aria-label="Download">
-            {downloadAvailable ? (
-              <a className="apk-download-btn apk-download-btn-primary" href={app.apkFile} download>
-                <DownloadIcon size={18} />
-                <span>Download APK</span>
-              </a>
-            ) : (
-              <>
-                <button type="button" className="apk-download-btn apk-download-btn-primary" disabled>
-                  <DownloadIcon size={18} />
-                  <span>Download APK</span>
-                </button>
-                <p className="apk-card-note">{app.apkStatus || 'APK file not available yet.'}</p>
-              </>
-            )}
+            <ApkDownloadButton app={app} className="apk-download-btn-primary" />
           </section>
         </article>
       </div>
