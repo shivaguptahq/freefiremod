@@ -1,0 +1,151 @@
+﻿.site-shell {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+.site-content {
+  flex: 1 0 auto;
+}
+
+.page-main {
+  background: #0b1933;
+  color: #f8fafc;
+}
+
+.page-wrap {
+  width: min(100%, 920px);
+  margin: 0 auto;
+  padding: clamp(6.25rem, 10vw, 7.5rem) clamp(1rem, 3vw, 2rem) clamp(3rem, 6vw, 4.5rem);
+}
+
+.breadcrumbs {
+  margin-bottom: 1.25rem;
+}
+
+.breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: #71829f;
+  font-size: 0.88rem;
+}
+
+.breadcrumbs li + li::before {
+  content: '/';
+  margin-right: 0.35rem;
+  color: rgba(148, 163, 184, 0.45);
+}
+
+.breadcrumbs a {
+  color: #a8b5cc;
+  transition: color 160ms ease;
+}
+
+.breadcrumbs a:hover {
+  color: #f8fafc;
+}
+
+.page-header {
+  margin-bottom: 1.75rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.page-title {
+  margin: 0;
+  color: #f8fafc;
+  font-size: clamp(2rem, 4.5vw, 3rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+}
+
+.page-lead {
+  margin: 0.85rem 0 0;
+  max-width: 65ch;
+  color: #a8b5cc;
+  font-size: 1.02rem;
+  line-height: 1.7;
+}
+
+.page-updated {
+  margin: 0.85rem 0 0;
+  color: #71829f;
+  font-size: 0.88rem;
+}
+
+.page-article {
+  display: grid;
+  gap: 1.35rem;
+}
+
+.legal-notice {
+  margin: 0;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(37, 99, 235, 0.22);
+  border-radius: 14px;
+  background: rgba(37, 99, 235, 0.08);
+  color: #dbeafe;
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.legal-section {
+  padding: 1.15rem 1.15rem 1.2rem;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 16px;
+  background: rgba(16, 31, 61, 0.42);
+}
+
+.legal-section h2 {
+  margin: 0 0 0.7rem;
+  color: #f8fafc;
+  font-size: 1.18rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+.legal-section p {
+  margin: 0;
+  color: #a8b5cc;
+  font-size: 0.98rem;
+  line-height: 1.75;
+}
+
+.legal-section p + p,
+.legal-section p + ul,
+.legal-section p + ol,
+.legal-section ul + p,
+.legal-section ol + p {
+  margin-top: 0.85rem;
+}
+
+.legal-section ul,
+.legal-section ol {
+  margin: 0.85rem 0 0;
+  padding-left: 1.25rem;
+  color: #a8b5cc;
+  display: grid;
+  gap: 0.45rem;
+  line-height: 1.7;
+}
+
+.legal-section li::marker {
+  color: #65f044;
+}
+
+.legal-section ol li::marker {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .legal-section {
+    padding: 1rem;
+  }
+}
