@@ -45,7 +45,7 @@ export default function TermsPage() {
 
       <Section title="4. Permitted Use">
         <p>You may use the website for lawful, personal, non-commercial informational purposes, such as:</p>
-        <ul>
+        <ul style={{ margin: '0.85rem 0 0', paddingLeft: '1.25rem', listStyleType: 'disc', listStyleColor: '#65f044', display: 'grid', gap: '0.45rem', lineHeight: 1.7, color: '#a8b5cc' }}>
           <li>Reading published guides, version notes, and compatibility information.</li>
           <li>Navigating public pages and sharing links to public pages where lawful.</li>
           <li>Submitting a copyright concern through the process described on the DMCA / Copyright Policy page when contact details are available.</li>
@@ -54,7 +54,7 @@ export default function TermsPage() {
 
       <Section title="5. Prohibited Activities">
         <p>You agree not to:</p>
-        <ul>
+        <ul style={{ margin: '0.85rem 0 0', paddingLeft: '1.25rem', listStyleType: 'disc', listStyleColor: '#65f044', display: 'grid', gap: '0.45rem', lineHeight: 1.7, color: '#a8b5cc' }}>
           <li>Use the website in violation of applicable law, regulation, or third-party rights.</li>
           <li>Attempt to gain unauthorized access to the website, hosting environment, or related systems.</li>
           <li>Upload, transmit, or distribute malware, malicious code, or harmful automated traffic.</li>

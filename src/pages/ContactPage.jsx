@@ -26,7 +26,7 @@ export default function ContactPage() {
       </Section>
 
       <Section title="Before Reaching Out">
-        <ul>
+        <ul style={{ margin: '0.85rem 0 0', paddingLeft: '1.25rem', listStyleType: 'disc', listStyleColor: '#65f044', display: 'grid', gap: '0.45rem', lineHeight: 1.7, color: '#a8b5cc' }}>
           <li>Review the FAQ for common questions about compatibility, updates, and safety.</li>
           <li>Use the Disclaimer and Terms pages to understand website limitations and permitted use.</li>
           <li>Use the DMCA / Copyright Policy page for intellectual property concerns.</li>

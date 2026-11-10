@@ -46,7 +46,7 @@ export default function AboutPage() {
       </Section>
 
       <Section title="3. Information Users Can Find">
-        <ul>
+        <ul style={{ margin: '0.85rem 0 0', paddingLeft: '1.25rem', listStyleType: 'disc', listStyleColor: '#65f044', display: 'grid', gap: '0.45rem', lineHeight: 1.7, color: '#a8b5cc' }}>
           <li>APK and app version information when available.</li>
           <li>General compatibility and device requirement guidance.</li>
           <li>Installation and troubleshooting information.</li>

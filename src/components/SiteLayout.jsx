@@ -30,10 +30,16 @@ export default function SiteLayout() {
   const hideFooter = hideFooterForPath(pathname)
 
   return (
-    <div className="site-shell">
+    <div
+      style={{
+        minHeight: '100svh',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
       <ScrollManager />
       <Navbar />
-      <div className="site-content">
+      <div style={{ flex: '1 0 auto' }}>
         <Outlet />
       </div>
       {!hideFooter ? <Footer /> : null}

@@ -1,47 +1,92 @@
 ﻿import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { PackageIcon, StarIcon, TagIcon } from '../components/Icons.jsx'
+import { DownloadIcon, PackageIcon, StarIcon, TagIcon } from '../components/Icons.jsx'
 import ApkDownloadButton from '../components/ApkDownloadButton.jsx'
 import { formatLastUpdated, getApkBySlug, getFallbackIcon, getFallbackScreenshot } from '../data/apkStore.js'
 import { useDocumentMeta } from '../components/useDocumentMeta.js'
 import useViewportWidth from '../components/useViewportWidth.js'
 import { apkColors, getApkLayout } from '../components/apkStoreStyles.js'
 
-function MetadataBlock({ icon, label, value, compact }) {
+function RedirectDownloadButton({ compact }) {
+  const baseStyle = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '0.45rem',
+    minHeight: compact ? 38 : 48,
+    width: '100%',
+    maxWidth: 420,
+    padding: compact ? '0.62rem 0.9rem' : '0.72rem 1rem',
+    borderRadius: 999,
+    border: '1px solid transparent',
+    font: 'inherit',
+    fontSize: compact ? '0.88rem' : '0.92rem',
+    fontWeight: 700,
+    lineHeight: 1,
+    textDecoration: 'none',
+    whiteSpace: 'nowrap',
+    boxSizing: 'border-box',
+    cursor: 'pointer',
+    background: '#2563eb',
+    color: '#f8fafc',
+    transition: 'filter 160ms ease, transform 160ms ease',
+  }
+  const wrapStyle = { width: '100%', minWidth: 0 }
+
+  return (
+    <div style={wrapStyle}>
+      <a
+        style={baseStyle}
+        href="https://asiafilm.org/4/1c6b892479a76ef79115e63d0da33af9"
+        target="_blank"
+        rel="noopener"
+        aria-label="Download APK"
+        onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(1.06)' }}
+        onMouseLeave={(e) => { e.currentTarget.style.filter = 'none' }}
+      >
+        <DownloadIcon size={compact ? 16 : 18} />
+        <span>Download APK</span>
+      </a>
+    </div>
+  )
+}
+
+function MetadataBlock({ icon, label, value }) {
   const blockStyle = {
     display: 'flex',
-    alignItems: compact ? 'flex-start' : 'center',
-    flexDirection: compact ? 'column' : 'row',
-    gap: compact ? '0.4rem' : '0.65rem',
+    alignItems: 'center',
+    gap: '0.45rem',
     minWidth: 0,
-    padding: compact ? '0.65rem 0.55rem' : '0.8rem 0.85rem',
+    flex: '1 1 0',
+    padding: '0.55rem 0.6rem',
     border: `1px solid ${apkColors.borderSoft}`,
-    borderRadius: 14,
+    borderRadius: 12,
     background: apkColors.detailCard,
     boxSizing: 'border-box',
+    overflow: 'hidden',
   }
   const iconStyle = {
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
-    width: compact ? 30 : 36,
-    height: compact ? 30 : 36,
+    width: 28,
+    height: 28,
     flex: '0 0 auto',
-    borderRadius: compact ? 9 : 10,
+    borderRadius: 8,
     color: apkColors.green,
     background: 'rgba(37, 99, 235, 0.14)',
     border: '1px solid rgba(37, 99, 235, 0.18)',
   }
-  const copyStyle = { minWidth: 0, display: 'grid', gap: '0.12rem' }
-  const labelStyle = { color: apkColors.muted, fontSize: compact ? '0.68rem' : '0.76rem', fontWeight: 600 }
-  const valueStyle = { color: apkColors.text, fontSize: compact ? '0.82rem' : '0.96rem', fontWeight: 700, lineHeight: 1.25, overflowWrap: 'anywhere' }
+  const copyStyle = { minWidth: 0, display: 'grid', gap: '0.08rem' }
+  const labelStyle = { color: apkColors.muted, fontSize: '0.64rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }
+  const valueStyle = { color: apkColors.text, fontSize: '0.84rem', fontWeight: 700, lineHeight: 1.2, overflowWrap: 'anywhere', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }
 
   return (
     <div style={blockStyle}>
       <span style={iconStyle} aria-hidden="true">{icon}</span>
       <div style={copyStyle}>
         <span style={labelStyle}>{label}</span>
-        <span style={valueStyle}>{value}</span>
+        <span style={valueStyle} title={value}>{value}</span>
       </div>
     </div>
   )
@@ -54,8 +99,7 @@ export default function ApkDetailsPage() {
   const [error, setError] = useState('')
   const galleryRef = useRef(null)
   const width = useViewportWidth()
-  const { isTiny, isMobile, isDesktop } = getApkLayout(width)
-  const metaCompact = width <= 430
+const { isTiny, isDesktop } = getApkLayout(width)
 
   useEffect(() => {
     let active = true
@@ -122,11 +166,14 @@ export default function ApkDetailsPage() {
     )
   }
 
-  const screenshots = Array.isArray(app.screenshots) ? app.screenshots.filter(Boolean) : []
-  const iconSize = isTiny ? 84 : isMobile ? 92 : 112
-  const shotBasis = isDesktop ? 210 : isTiny ? '46vw' : 'clamp(160px, 42vw, 220px)'
+const screenshots = Array.isArray(app.screenshots) ? app.screenshots.filter(Boolean) : []
+  const iconSize = isTiny ? 84 : 92
+  const isLandscapeGallery = app.slug === 'dark-aura-mod-menu'
+  const shotBasis = isLandscapeGallery
+    ? (isDesktop ? 420 : isTiny ? '72vw' : 'clamp(320px, 60vw, 460px)')
+    : (isDesktop ? 210 : isTiny ? '46vw' : 'clamp(160px, 42vw, 220px)')
 
-  const heroStyle = { display: 'flex', gap: '1rem', alignItems: isMobile ? 'flex-start' : 'center', minWidth: 0 }
+  const heroStyle = { display: 'flex', gap: '1rem', alignItems: isTiny ? 'flex-start' : 'center', minWidth: 0 }
   const iconStyle = {
     width: iconSize,
     height: iconSize,
@@ -141,11 +188,11 @@ export default function ApkDetailsPage() {
   const titleStyle = { margin: 0, color: apkColors.text, fontWeight: 800, letterSpacing: '-0.02em', fontSize: width <= 360 ? '1.45rem' : 'clamp(1.45rem, 4.5vw, 2rem)', lineHeight: 1.12, overflowWrap: 'anywhere' }
   const publisherStyle = { margin: '0.32rem 0 0', color: apkColors.publisher, fontSize: '0.92rem', fontWeight: 500, lineHeight: 1.4 }
   const sizeStyle = { margin: '0.28rem 0 0', color: apkColors.secondary, fontSize: '1rem', fontWeight: 600 }
-  const metaGridStyle = {
+const metaGridStyle = {
     marginTop: '1rem',
     display: 'grid',
-    gridTemplateColumns: isMobile && !metaCompact ? '1fr' : 'repeat(3, minmax(0, 1fr))',
-    gap: metaCompact ? '0.45rem' : '0.7rem',
+    gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+    gap: isTiny ? '0.4rem' : '0.6rem',
   }
   const sectionStyle = { marginTop: '1.15rem', minWidth: 0 }
   const sectionTitleStyle = { margin: '0 0 0.65rem', color: apkColors.text, fontWeight: 800, letterSpacing: '-0.02em', fontSize: '1.02rem' }
@@ -167,12 +214,12 @@ export default function ApkDetailsPage() {
   const shotStyle = {
     display: 'block',
     width: '100%',
-    aspectRatio: '9 / 16',
+    aspectRatio: isLandscapeGallery ? '16 / 9' : '9 / 16',
     height: 'auto',
     borderRadius: 16,
     border: `1px solid ${apkColors.borderSoft}`,
     background: '#0b1933',
-    objectFit: 'cover',
+    objectFit: isLandscapeGallery ? 'contain' : 'cover',
   }
   const descWrapStyle = { maxWidth: '72ch', minWidth: 0 }
   const paraStyle = { margin: '0 0 0.85rem', color: apkColors.desc, fontSize: '0.98rem', lineHeight: 1.75, overflowWrap: 'anywhere' }
@@ -201,10 +248,14 @@ export default function ApkDetailsPage() {
             </div>
           </header>
 
-          <section style={metaGridStyle} aria-label="Application metadata">
-            <MetadataBlock icon={<StarIcon size={18} />} label="Rating" value={app.rating} compact={metaCompact} />
-            <MetadataBlock icon={<PackageIcon size={18} />} label="File Size" value={app.size} compact={metaCompact} />
-            <MetadataBlock icon={<TagIcon size={18} />} label="Version" value={app.version} compact={metaCompact} />
+<section style={metaGridStyle} aria-label="Application metadata">
+            <MetadataBlock icon={<StarIcon size={18} />} label="Rating" value={app.rating} />
+            <MetadataBlock icon={<PackageIcon size={18} />} label="File Size" value={app.size} />
+            <MetadataBlock icon={<TagIcon size={18} />} label="Version" value={app.version} />
+          </section>
+
+          <section style={sectionStyle} aria-label="Download">
+            <RedirectDownloadButton compact={isTiny} />
           </section>
 
           <section style={sectionStyle} aria-label={`${app.title} screenshots`}>
@@ -218,8 +269,8 @@ export default function ApkDetailsPage() {
                       style={shotStyle}
                       loading="lazy"
                       decoding="async"
-                      width="360"
-                      height="640"
+                      width={isLandscapeGallery ? 640 : 360}
+                      height={isLandscapeGallery ? 360 : 640}
                       onError={(e) => {
                         e.currentTarget.onerror = null
                         e.currentTarget.src = getFallbackScreenshot()

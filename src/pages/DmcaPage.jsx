@@ -50,7 +50,7 @@ export default function DmcaPage() {
 
       <Section title="5. Required Information for a Complaint">
         <p>A complete notice should generally include:</p>
-        <ol>
+        <ol style={{ margin: '0.85rem 0 0', paddingLeft: '1.25rem', listStyleType: 'decimal', listStyleColor: '#2563eb', display: 'grid', gap: '0.45rem', lineHeight: 1.7, color: '#a8b5cc' }}>
           <li>Identification of the copyrighted work claimed to have been infringed.</li>
           <li>Identification of the material that is claimed to be infringing or the subject of infringing activity.</li>
           <li>Information reasonably sufficient to locate the material, such as the relevant page URL.</li>
