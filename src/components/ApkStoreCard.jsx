@@ -1,7 +1,8 @@
 ﻿import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { getFallbackIcon } from '../data/apkStore.js'
 import ApkDownloadButton from './ApkDownloadButton.jsx'
+import { triggerPopunder } from './adManager.js'
 import useViewportWidth from './useViewportWidth.js'
 import { apkColors, getApkLayout } from './apkStoreStyles.js'
 
@@ -9,6 +10,7 @@ export default function ApkStoreCard({ app }) {
   const [hovered, setHovered] = useState(false)
   const width = useViewportWidth()
   const { isTiny } = getApkLayout(width)
+  const navigate = useNavigate()
   const detailPath = `/apkstore/${app.slug}`
   const iconSize = isTiny ? 64 : 72
 
@@ -54,9 +56,17 @@ export default function ApkStoreCard({ app }) {
   const sizeStyle = { margin: '0.28rem 0 0', color: apkColors.secondary, fontSize: '0.94rem', fontWeight: 600 }
   const ctaStyle = { marginTop: '0.75rem', paddingLeft: `calc(${iconSize}px + 0.9rem)`, minWidth: 0 }
 
+  function onSelectionClick(event) {
+    // Genuine user click from the listing page: trigger eligible popunder, then navigate.
+    event.preventDefault()
+    triggerPopunder(app.slug).finally(() => {
+      navigate(detailPath)
+    })
+  }
+
   return (
     <article style={cardStyle} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
-      <Link style={mainStyle} to={detailPath} aria-label={`Open ${app.title} details`}>
+      <Link style={mainStyle} to={detailPath} onClick={onSelectionClick} aria-label={`Open ${app.title} details`}>
         <img
           style={iconStyle}
           src={app.icon}
@@ -76,7 +86,7 @@ export default function ApkStoreCard({ app }) {
         </div>
       </Link>
       <div style={ctaStyle}>
-        <ApkDownloadButton app={app} compact stopPropagation />
+        <ApkDownloadButton app={app} compact stopPropagation navigateOnly detailPath={detailPath} onClick={onSelectionClick} />
       </div>
     </article>
   )

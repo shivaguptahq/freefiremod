@@ -168,7 +168,7 @@ const { isTiny, isDesktop } = getApkLayout(width)
 
 const screenshots = Array.isArray(app.screenshots) ? app.screenshots.filter(Boolean) : []
   const iconSize = isTiny ? 84 : 92
-  const isLandscapeGallery = app.slug === 'dark-aura-mod-menu'
+  const isLandscapeGallery = app.slug === 'dark-aura-mod-menu' || app.slug === 'macro-headshot-panel'
   const shotBasis = isLandscapeGallery
     ? (isDesktop ? 420 : isTiny ? '72vw' : 'clamp(320px, 60vw, 460px)')
     : (isDesktop ? 210 : isTiny ? '46vw' : 'clamp(160px, 42vw, 220px)')

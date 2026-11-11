@@ -1,4 +1,5 @@
 ﻿import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { DownloadIcon } from './Icons.jsx'
 
 function toSafeFilename(value) {
@@ -12,7 +13,7 @@ function getDownloadFileName(app) {
   return toSafeFilename(parts || app?.slug || 'app')
 }
 
-export default function ApkDownloadButton({ app, compact = false, stopPropagation = false }) {
+export default function ApkDownloadButton({ app, compact = false, stopPropagation = false, navigateOnly = false, detailPath = '', onClick = null }) {
   const [hovered, setHovered] = useState(false)
   const available = Boolean(app?.apkFile && app?.fileSizeBytes > 0 && app?.apkAvailable && !app?.isDemo)
   const filename = getDownloadFileName(app)
@@ -54,8 +55,9 @@ export default function ApkDownloadButton({ app, compact = false, stopPropagatio
   }
   const wrapStyle = { width: compact ? 'auto' : '100%', minWidth: 0 }
 
-  function onClick(event) {
+  function onClickHandler(event) {
     if (stopPropagation) event.stopPropagation()
+    if (typeof onClick === 'function') onClick(event)
   }
 
   if (!available) {
@@ -69,6 +71,24 @@ export default function ApkDownloadButton({ app, compact = false, stopPropagatio
     )
   }
 
+  if (navigateOnly) {
+    return (
+      <div style={wrapStyle}>
+        <Link
+          style={enabledStyle}
+          to={detailPath}
+          onClick={onClickHandler}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          aria-label={`Open ${app?.title || 'application'} details`}
+        >
+          <DownloadIcon size={compact ? 16 : 18} />
+          <span>Download APK</span>
+        </Link>
+      </div>
+    )
+  }
+
   return (
     <div style={wrapStyle}>
       <a
@@ -77,7 +97,7 @@ export default function ApkDownloadButton({ app, compact = false, stopPropagatio
         download={filename}
         rel="noopener"
         target="_self"
-        onClick={onClick}
+        onClick={onClickHandler}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         aria-label={`Download ${app?.title || 'APK'} as ${filename}`}

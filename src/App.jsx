@@ -1,5 +1,5 @@
 ﻿import { useEffect } from 'react'
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import SiteLayout from './components/SiteLayout.jsx'
 import Home from './pages/Home.jsx'
 import ApkStorePage from './pages/ApkStorePage.jsx'
@@ -11,6 +11,7 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage.jsx'
 import DisclaimerPage from './pages/DisclaimerPage.jsx'
 import DmcaPage from './pages/DmcaPage.jsx'
 import { initBackgroundAudio } from './components/backgroundAudio.js'
+import { loadSocialBar } from './components/adManager.js'
 
 function SpaRedirect() {
   useEffect(() => {
@@ -24,6 +25,23 @@ function SpaRedirect() {
   return null
 }
 
+// Social Bar: homepage + individual app detail pages only.
+function SocialBarLoader() {
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    const isHome = pathname === '/' || pathname === ''
+    const isAppDetail = /^\/apk-?store\/[^/]+$/.test(pathname)
+    if (isHome || isAppDetail) {
+      loadSocialBar().catch(() => {
+        // Ad provider unavailable; do not break the page.
+      })
+    }
+  }, [pathname])
+
+  return null
+}
+
 export default function App() {
   useEffect(() => initBackgroundAudio(), [])
   const basename = import.meta.env.BASE_URL
@@ -31,6 +49,7 @@ export default function App() {
   return (
     <BrowserRouter basename={basename}>
       <SpaRedirect />
+      <SocialBarLoader />
       <Routes>
         <Route element={<SiteLayout />}>
           <Route path="/" element={<Home />} />
