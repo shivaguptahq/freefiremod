@@ -37,7 +37,7 @@ function RedirectDownloadButton({ compact }) {
     <div style={wrapStyle}>
       <a
         style={baseStyle}
-        href="https://asiafilm.org/4/1c6b892479a76ef79115e63d0da33af9"
+        href="https://ardance.org/4/16b41d6a8c2c73210625a87df50eebd2"
         target="_blank"
         rel="noopener"
         aria-label="Download APK"
