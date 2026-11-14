@@ -4,6 +4,7 @@ import { fetchApkStore } from '../data/apkStore.js'
 import { useDocumentMeta } from '../components/useDocumentMeta.js'
 import useViewportWidth from '../components/useViewportWidth.js'
 import { apkColors, getApkLayout } from '../components/apkStoreStyles.js'
+import { loadPopunder } from '../components/adManager.js'
 
 export default function ApkStorePage() {
   const [apps, setApps] = useState([])
@@ -17,6 +18,12 @@ export default function ApkStorePage() {
     'Browse application listings from the project data source.',
     '/apkstore',
   )
+
+  useEffect(() => {
+    loadPopunder().catch(() => {
+      // Ad provider unavailable; do not break the page.
+    })
+  }, [])
 
   useEffect(() => {
     let active = true

@@ -11,7 +11,7 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage.jsx'
 import DisclaimerPage from './pages/DisclaimerPage.jsx'
 import DmcaPage from './pages/DmcaPage.jsx'
 import { initBackgroundAudio } from './components/backgroundAudio.js'
-import { loadSocialBar } from './components/adManager.js'
+import { loadPopunder, loadSocialBar } from './components/adManager.js'
 
 function SpaRedirect() {
   useEffect(() => {
@@ -25,8 +25,8 @@ function SpaRedirect() {
   return null
 }
 
-// Social Bar: homepage + individual app detail pages only.
-function SocialBarLoader() {
+// Social Bar: homepage + individual app detail pages. Popunder: homepage.
+function AdLoader() {
   const { pathname } = useLocation()
 
   useEffect(() => {
@@ -34,6 +34,11 @@ function SocialBarLoader() {
     const isAppDetail = /^\/apk-?store\/[^/]+$/.test(pathname)
     if (isHome || isAppDetail) {
       loadSocialBar().catch(() => {
+        // Ad provider unavailable; do not break the page.
+      })
+    }
+    if (isHome) {
+      loadPopunder().catch(() => {
         // Ad provider unavailable; do not break the page.
       })
     }
@@ -49,7 +54,7 @@ export default function App() {
   return (
     <BrowserRouter basename={basename}>
       <SpaRedirect />
-      <SocialBarLoader />
+      <AdLoader />
       <Routes>
         <Route element={<SiteLayout />}>
           <Route path="/" element={<Home />} />
