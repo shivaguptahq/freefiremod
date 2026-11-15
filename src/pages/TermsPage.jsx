@@ -4,9 +4,10 @@ export default function TermsPage() {
   return (
     <PageShell
       title="Terms & Conditions"
-      description="Terms governing access to and use of the FreeFire Mods informational website."
+      description="Terms for using the FreeFire Mods informational website, covering permitted use, limitations, third-party content, and user responsibilities."
       updated="November 8, 2026"
       breadcrumbs={[{ label: 'Home', to: '/' }, { label: 'Terms & Conditions' }]}
+      canonical="/terms"
     >
       <LegalNotice>
         These Terms are provided for general informational purposes and describe intended website

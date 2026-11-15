@@ -4,9 +4,10 @@ export default function DmcaPage() {
   return (
     <PageShell
       title="DMCA / Copyright Policy"
-      description="Information about copyright complaints, trademark concerns, and material review requests."
+      description="Copyright and trademark policy for FreeFire Mods with guidance on submitting notices, required details, review steps, and policy updates."
       updated="November 8, 2026"
       breadcrumbs={[{ label: 'Home', to: '/' }, { label: 'DMCA / Copyright Policy' }]}
+      canonical="/dmca"
     >
       <LegalNotice>
         This page describes a general copyright concern process. It does not claim that a DMCA agent

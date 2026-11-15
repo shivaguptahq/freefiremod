@@ -4,9 +4,10 @@ export default function PrivacyPolicyPage() {
   return (
     <PageShell
       title="Privacy Policy"
-      description="How FreeFire Mods may handle information when you access this website."
+      description="Privacy information for FreeFire Mods explaining current data handling, hosting logs, third-party services, cookies, and policy updates."
       updated="November 8, 2026"
       breadcrumbs={[{ label: 'Home', to: '/' }, { label: 'Privacy Policy' }]}
+      canonical="/privacy-policy"
     >
       <LegalNotice>
         This Privacy Policy is based on the current application as inspected during implementation.

@@ -4,9 +4,10 @@ export default function DisclaimerPage() {
   return (
     <PageShell
       title="Disclaimer"
-      description="Important limitations, third-party rights notices, and safety information for FreeFire Mods."
+      description="Disclaimer for FreeFire Mods describing independent status, third-party rights, content limits, software risks, and user responsibility."
       updated="November 8, 2026"
       breadcrumbs={[{ label: 'Home', to: '/' }, { label: 'Disclaimer' }]}
+      canonical="/disclaimer"
     >
       <LegalNotice>
         This Disclaimer is intended to explain website limitations in plain terms. It does not
