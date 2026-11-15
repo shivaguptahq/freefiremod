@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    { "source": "/apkstore", "destination": "/apk-store", "permanent": true },
+    { "source": "/apkstore/:slug*", "destination": "/apk-store/:slug*", "permanent": true }
+  ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
