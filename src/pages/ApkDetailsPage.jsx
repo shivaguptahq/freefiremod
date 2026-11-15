@@ -6,6 +6,7 @@ import { formatLastUpdated, getApkBySlug, getFallbackIcon, getFallbackScreenshot
 import { useDocumentMeta } from '../components/useDocumentMeta.js'
 import useViewportWidth from '../components/useViewportWidth.js'
 import { apkColors, getApkLayout } from '../components/apkStoreStyles.js'
+import { buildAppDescription, buildAppTitle } from '../seo/metaHelpers.js'
 
 function RedirectDownloadButton({ compact }) {
   const baseStyle = {
@@ -135,9 +136,25 @@ const { isTiny, isDesktop } = getApkLayout(width)
   }, [app])
 
   useDocumentMeta(
-    app?.title || (loading ? 'Loading application' : 'Application Not Found'),
-    app?.shortDescription || 'Application details loaded from the project data source.',
-    `/apk-store/${slug || ''}`,
+    loading
+      ? ''
+      : app && !error
+        ? buildAppTitle(app)
+        : 'Application not found',
+    loading
+      ? ''
+      : app && !error
+        ? buildAppDescription(app)
+        : 'This application listing does not exist or could not be loaded.',
+    loading ? '' : app && !error ? `/apk-store/${slug}` : '/apk-store',
+    loading
+      ? { skip: true }
+      : app && !error
+        ? {
+            image: Array.isArray(app?.screenshots) && app.screenshots[0] ? app.screenshots[0] : '/og-image.png',
+            imageAlt: `${app.title} screenshot`,
+          }
+        : { robots: 'noindex, follow' },
   )
 
   const pageStyle = {

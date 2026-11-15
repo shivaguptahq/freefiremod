@@ -7,6 +7,7 @@ export default function AboutPage() {
       description="Information about FreeFire Mods, our purpose, and the limits of the material published on this website."
       updated="November 8, 2026"
       breadcrumbs={[{ label: 'Home', to: '/' }, { label: 'About Us' }]}
+      canonical="/about"
     >
       <LegalNotice>
         FreeFire Mods is an independent informational website. It is not affiliated with, endorsed

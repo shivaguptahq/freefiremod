@@ -14,8 +14,8 @@ export default function ApkStorePage() {
   const { isTiny, isDesktop } = getApkLayout(width)
 
   useDocumentMeta(
-    'APK Store',
-    'Browse application listings from the project data source.',
+    'Free Fire APK Store – Gaming Tool Listings',
+    'Browse gaming APK listings with version, file size and last-updated details for each app. Review the details and risks before installing anything.',
     '/apk-store',
   )
 
@@ -57,6 +57,8 @@ export default function ApkStorePage() {
     margin: '0 auto',
     minWidth: 0,
   }
+  const headingStyle = { margin: 0, color: apkColors.text, fontSize: 'clamp(1.5rem, 4vw, 2rem)', fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1.15 }
+  const introStyle = { margin: '0.4rem 0 1rem', color: apkColors.secondary, fontSize: '0.95rem', lineHeight: 1.5 }
   const listStyle = { display: 'grid', gap: '0.85rem', minWidth: 0 }
   const stateStyle = { margin: '0.42rem 0 0', color: apkColors.secondary, fontSize: '0.9rem', lineHeight: 1.5 }
   const errorStyle = { ...stateStyle, color: apkColors.error }
@@ -64,6 +66,8 @@ export default function ApkStorePage() {
   return (
     <main style={pageStyle}>
       <div style={wrapStyle}>
+        <h1 style={headingStyle}>Free Fire APK Store</h1>
+        <p style={introStyle}>Browse gaming app listings with version, file size and last-updated details.</p>
         {loading ? <p style={stateStyle} role="status">Loading applications…</p> : null}
         {error ? <p style={errorStyle} role="alert">{error}</p> : null}
         {!loading && !error ? (

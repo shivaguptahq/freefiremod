@@ -4,9 +4,10 @@ export default function ContactPage() {
   return (
     <PageShell
       title="Contact Us"
-      description="General contact information for website-related questions and copyright concerns."
+      description="Contact page for FreeFire Mods. General contact details are not yet published; see guidance for questions, corrections, and copyright concerns."
       updated="November 8, 2026"
       breadcrumbs={[{ label: 'Home', to: '/' }, { label: 'Contact Us' }]}
+      canonical="/contact"
     >
       <LegalNotice>
         Contact details are not yet published. FreeFire Mods does not display invented email
