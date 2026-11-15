@@ -1,14 +1,14 @@
 ﻿import { useEffect, useState } from 'react'
 import ApkStoreCard from '../components/ApkStoreCard.jsx'
-import { fetchApkStore } from '../data/apkStore.js'
+import { fetchApkStore, getCachedApks } from '../data/apkStore.js'
 import { useDocumentMeta } from '../components/useDocumentMeta.js'
 import useViewportWidth from '../components/useViewportWidth.js'
 import { apkColors, getApkLayout } from '../components/apkStoreStyles.js'
 import { loadPopunder } from '../components/adManager.js'
 
 export default function ApkStorePage() {
-  const [apps, setApps] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [apps, setApps] = useState(() => getCachedApks() ?? [])
+  const [loading, setLoading] = useState(() => !getCachedApks())
   const [error, setError] = useState('')
   const width = useViewportWidth()
   const { isTiny, isDesktop } = getApkLayout(width)

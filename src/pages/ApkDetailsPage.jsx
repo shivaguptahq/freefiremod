@@ -2,7 +2,7 @@
 import { useParams } from 'react-router-dom'
 import { DownloadIcon, PackageIcon, StarIcon, TagIcon } from '../components/Icons.jsx'
 import ApkDownloadButton from '../components/ApkDownloadButton.jsx'
-import { formatLastUpdated, getApkBySlug, getFallbackIcon, getFallbackScreenshot } from '../data/apkStore.js'
+import { formatLastUpdated, getApkBySlug, getCachedApks, getFallbackIcon, getFallbackScreenshot } from '../data/apkStore.js'
 import { useDocumentMeta } from '../components/useDocumentMeta.js'
 import useViewportWidth from '../components/useViewportWidth.js'
 import { apkColors, getApkLayout } from '../components/apkStoreStyles.js'
@@ -95,8 +95,8 @@ function MetadataBlock({ icon, label, value }) {
 
 export default function ApkDetailsPage() {
   const { slug } = useParams()
-  const [app, setApp] = useState(undefined)
-  const [loading, setLoading] = useState(true)
+  const [app, setApp] = useState(() => getCachedApks()?.find((a) => a.slug === slug) ?? undefined)
+  const [loading, setLoading] = useState(() => !getCachedApks())
   const [error, setError] = useState('')
   const galleryRef = useRef(null)
   const width = useViewportWidth()
