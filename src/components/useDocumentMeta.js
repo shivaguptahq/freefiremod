@@ -28,6 +28,18 @@ export function useDocumentMeta(title, description, canonicalPath, options = {})
   const resolvedImageAlt = imageAlt || resolvedTitle || SITE_NAME
   const resolvedCanonical = canonicalPath ? absoluteUrl(canonicalPath) : ''
 
+  if (typeof window === 'undefined' && !skip) {
+    globalThis.__SEO_HEAD__ = {
+      title: resolvedTitle,
+      description: description || '',
+      canonical: resolvedCanonical,
+      robots,
+      image: resolvedImage,
+      imageAlt: resolvedImageAlt,
+      type,
+    }
+  }
+
   useEffect(() => {
     if (skip) return
     document.title = resolvedTitle

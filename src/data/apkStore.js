@@ -34,6 +34,15 @@ const REQUIRED_FIELDS = [
 let cache = null
 let pending = null
 
+export function getCachedApks() {
+  if (cache) return cache
+  if (typeof globalThis !== 'undefined' && Array.isArray(globalThis.__APK_DATA__)) {
+    cache = normalizeList(globalThis.__APK_DATA__)
+    return cache
+  }
+  return null
+}
+
 export function getFallbackIcon(title = 'App') {
   const letter = encodeURIComponent((title.trim()[0] || 'A').toUpperCase())
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><rect width="512" height="512" rx="96" fill="#101F3D"/><rect x="24" y="24" width="464" height="464" rx="78" fill="none" stroke="rgba(37,99,235,0.35)"/><text x="256" y="290" text-anchor="middle" font-family="Arial,sans-serif" font-size="180" font-weight="700" fill="#65F044">${letter}</text></svg>`
@@ -124,6 +133,8 @@ function normalizeList(data) {
 }
 
 export async function fetchApkStore({ force = false } = {}) {
+  const cached = getCachedApks()
+  if (cached && !force) return cached
   if (cache && !force) return cache
   if (pending && !force) return pending
 

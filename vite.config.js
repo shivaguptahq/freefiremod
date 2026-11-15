@@ -4,10 +4,15 @@ import { resolve } from 'node:path'
 import { defineConfig } from 'vite'
 
 function spaFallback404() {
+  let isSsr = false
   return {
     name: 'spa-fallback-404',
     apply: 'build',
+    configResolved(config) {
+      isSsr = !!config.build?.ssr
+    },
     closeBundle() {
+      if (isSsr) return
       const index = resolve(import.meta.dirname, 'dist/index.html')
       const fallback = resolve(import.meta.dirname, 'dist/404.html')
       if (existsSync(index)) copyFileSync(index, fallback)
@@ -16,10 +21,15 @@ function spaFallback404() {
 }
 
 function sitemapPlugin() {
+  let isSsr = false
   return {
     name: 'sitemap-plugin',
     apply: 'build',
+    configResolved(config) {
+      isSsr = !!config.build?.ssr
+    },
     closeBundle() {
+      if (isSsr) return
       const siteUrl = 'https://freefiremod.xyz'
       let apps = []
       try {
@@ -69,4 +79,5 @@ function sitemapPlugin() {
 export default defineConfig({
   plugins: [react(), spaFallback404(), sitemapPlugin()],
 })
+
 

@@ -52,12 +52,9 @@ function AdLoader() {
   return null
 }
 
-export default function App() {
-  useEffect(() => initBackgroundAudio(), [])
-  const basename = import.meta.env.BASE_URL
-
+export function AppRoutes() {
   return (
-    <BrowserRouter basename={basename}>
+    <>
       <SpaRedirect />
       <AdLoader />
       <Routes>
@@ -76,6 +73,17 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
+    </>
+  )
+}
+
+export default function App() {
+  useEffect(() => initBackgroundAudio(), [])
+  const basename = import.meta.env.BASE_URL
+
+  return (
+    <BrowserRouter basename={basename}>
+      <AppRoutes />
     </BrowserRouter>
   )
 }
