@@ -137,7 +137,7 @@ const { isTiny, isDesktop } = getApkLayout(width)
   useDocumentMeta(
     app?.title || (loading ? 'Loading application' : 'Application Not Found'),
     app?.shortDescription || 'Application details loaded from the project data source.',
-    `/apkstore/${slug || ''}`,
+    `/apk-store/${slug || ''}`,
   )
 
   const pageStyle = {

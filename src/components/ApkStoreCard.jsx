@@ -9,7 +9,7 @@ export default function ApkStoreCard({ app }) {
   const [hovered, setHovered] = useState(false)
   const width = useViewportWidth()
   const { isTiny } = getApkLayout(width)
-  const detailPath = `/apkstore/${app.slug}`
+  const detailPath = `/apk-store/${app.slug}`
   const iconSize = isTiny ? 64 : 72
 
   const cardStyle = {

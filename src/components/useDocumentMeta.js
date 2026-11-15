@@ -1,4 +1,5 @@
 ﻿import { useEffect } from 'react'
+import { absoluteUrl } from '../seo/siteConfig.js'
 
 const siteName = 'FreeFire Mods'
 
@@ -19,9 +20,9 @@ export function useDocumentMeta(title, description, canonicalPath) {
     setMeta('meta[name="description"]', 'content', description, 'meta', { name: 'description' })
     setMeta('meta[property="og:title"]', 'content', title ? `${title} | ${siteName}` : siteName, 'meta', { property: 'og:title' })
     setMeta('meta[property="og:description"]', 'content', description, 'meta', { property: 'og:description' })
-    if (canonicalPath && typeof window !== 'undefined') {
-      setMeta('link[rel="canonical"]', 'href', `${window.location.origin}${canonicalPath}`, 'link', { rel: 'canonical' })
-      setMeta('meta[property="og:url"]', 'content', `${window.location.origin}${canonicalPath}`, 'meta', { property: 'og:url' })
+    if (canonicalPath) {
+      setMeta('link[rel="canonical"]', 'href', absoluteUrl(canonicalPath), 'link', { rel: 'canonical' })
+      setMeta('meta[property="og:url"]', 'content', absoluteUrl(canonicalPath), 'meta', { property: 'og:url' })
     }
   }, [title, description, canonicalPath])
 }
