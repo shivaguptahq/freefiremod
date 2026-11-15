@@ -1,1 +1,7 @@
-﻿/* /index.html 200
+﻿# 1) One canonical host: www -> non-www (301)
+https://www.freefiremod.xyz/*  https://freefiremod.xyz/:splat  301!
+# 2) Old store path -> new store path (301)
+/apkstore  /apk-store  301
+/apkstore/*  /apk-store/:splat  301
+# 3) SPA fallback (will be removed in a later step; keep it for now)
+/*  /index.html  200

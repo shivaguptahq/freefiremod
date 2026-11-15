@@ -1,5 +1,5 @@
 ﻿import { useEffect } from 'react'
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom'
 import SiteLayout from './components/SiteLayout.jsx'
 import Home from './pages/Home.jsx'
 import ApkStorePage from './pages/ApkStorePage.jsx'
@@ -12,6 +12,11 @@ import DisclaimerPage from './pages/DisclaimerPage.jsx'
 import DmcaPage from './pages/DmcaPage.jsx'
 import { initBackgroundAudio } from './components/backgroundAudio.js'
 import { loadPopunder, loadSocialBar } from './components/adManager.js'
+
+function LegacyStoreRedirect() {
+  const { slug } = useParams()
+  return <Navigate to={slug ? `/apk-store/${slug}` : '/apk-store'} replace />
+}
 
 function SpaRedirect() {
   useEffect(() => {
@@ -60,8 +65,8 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/apk-store" element={<ApkStorePage />} />
           <Route path="/apk-store/:slug" element={<ApkDetailsPage />} />
-          <Route path="/apkstore" element={<ApkStorePage />} />
-          <Route path="/apkstore/:slug" element={<ApkDetailsPage />} />
+          <Route path="/apkstore" element={<LegacyStoreRedirect />} />
+          <Route path="/apkstore/:slug" element={<LegacyStoreRedirect />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/terms" element={<TermsPage />} />

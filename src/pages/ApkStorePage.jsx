@@ -16,7 +16,7 @@ export default function ApkStorePage() {
   useDocumentMeta(
     'APK Store',
     'Browse application listings from the project data source.',
-    '/apkstore',
+    '/apk-store',
   )
 
   useEffect(() => {

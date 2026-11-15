@@ -23,6 +23,7 @@ export default function Home() {
   useDocumentMeta(
     'Free Fire MAX MOD APK – Features, Versions & Information',
     'Explore Free Fire MAX APK information, version details, features, compatibility and screenshots. Find useful information about available game builds.',
+    '/',
   )
 
   useEffect(() => {

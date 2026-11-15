@@ -1,0 +1,7 @@
+# https://freefiremod.xyz/robots.txt
+User-agent: *
+Allow: /
+# Keep large APK binaries out of the crawl (icons/screenshots under /assets stay crawlable)
+Disallow: /*.apk$
+
+Sitemap: https://freefiremod.xyz/sitemap.xml
