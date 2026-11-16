@@ -83,13 +83,22 @@ function stripSeoHead(html) {
   out = out.replace(/\s*<meta\s+name=["']googlebot["'][^>]*>/gi, '')
   out = out.replace(/\s*<meta\s+property=["']og:[^"']+["'][^>]*>/gi, '')
   out = out.replace(/\s*<meta\s+name=["']twitter:[^"']+["'][^>]*>/gi, '')
+  out = out.replace(/\s*<script\s+type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/gi, '')
   return out
 }
 
-function injectHeadAndBody(template, headBlock, appHtml, apkDataScript) {
+function buildJsonLdBlock(jsonld) {
+  if (!Array.isArray(jsonld) || jsonld.length === 0) return ''
+  return jsonld
+    .map((schema) => `    <script type="application/ld+json" data-seo="1">${JSON.stringify(schema).replace(/</g, '\\u003c')}</script>`)
+    .join('\n')
+}
+
+function injectHeadAndBody(template, headBlock, jsonldBlock, appHtml, apkDataScript) {
   let out = stripSeoHead(template)
   if (!out.includes('</head>')) throw new Error('Template missing </head>.')
-  out = out.replace('</head>', `\n${headBlock}\n  </head>`)
+  const blocks = [headBlock, jsonldBlock].filter(Boolean).join('\n')
+  out = out.replace('</head>', `\n${blocks}\n  </head>`)
 
   if (!out.includes('<div id="root"></div>')) throw new Error('Template missing <div id="root"></div>.')
   out = out.replace('<div id="root"></div>', `<div id="root">${appHtml}</div>`)
@@ -121,6 +130,46 @@ function write404(distPath) {
   fs.writeFileSync(path.join(distPath, '404.html'), html, 'utf8')
 }
 
+function getVisibleBreadcrumbs(appHtml) {
+  const navMatch = appHtml.match(/<nav[^>]*aria-label=["']Breadcrumb["'][^>]*>[\s\S]*?<\/nav>/i)
+  if (!navMatch) return null
+  const nav = navMatch[0]
+  const itemRe = /<li[\s\S]*?>([\s\S]*?)<\/li>/gi
+  const items = []
+  let m
+  while ((m = itemRe.exec(nav))) {
+    const chunk = m[1]
+    const linkMatch = chunk.match(/<a[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/i)
+    if (linkMatch) {
+      items.push({ name: linkMatch[2].replace(/<[^>]+>/g, '').trim(), urlPath: linkMatch[1] })
+      continue
+    }
+    const spanMatch = chunk.match(/<span[^>]*aria-current=["']page["'][^>]*>([\s\S]*?)<\/span>/i)
+    if (spanMatch) {
+      items.push({ name: spanMatch[1].replace(/<[^>]+>/g, '').trim(), current: true })
+    }
+  }
+  return items
+}
+
+function findForbidden(obj, path = '$', found = []) {
+  if (obj == null) return found
+  const forbiddenKeys = new Set(['aggregateRating', 'review', 'rating', 'offers', 'price', 'downloadUrl', 'applicationCategory', 'operatingSystem', 'fileSize'])
+  const forbiddenTypes = new Set(['SoftwareApplication'])
+  if (Array.isArray(obj)) {
+    obj.forEach((v, i) => findForbidden(v, `${path}[${i}]`, found))
+    return found
+  }
+  if (typeof obj === 'object') {
+    for (const [k, v] of Object.entries(obj)) {
+      if (forbiddenKeys.has(k)) found.push(`${path}.${k}`)
+      if (k === '@type' && forbiddenTypes.has(String(v))) found.push(`${path}.@type=${v}`)
+      findForbidden(v, `${path}.${k}`, found)
+    }
+  }
+  return found
+}
+
 async function main() {
   const apksPath = path.resolve(root, 'public/assets/apks/data/apks.json')
   if (!fs.existsSync(apksPath)) throw new Error(`Missing ${apksPath}`)
@@ -149,17 +198,22 @@ async function main() {
     '/dmca',
   ]
 
+  const appTitleBySlug = new Map(rawApks.filter((a) => a && a.slug && a.title).map((a) => [a.slug, String(a.title)]))
+  const noSchemaRoutes = new Set(['/about', '/contact', '/terms', '/privacy-policy', '/disclaimer', '/dmca'])
+
   const apkDataScript = `<script>window.__APK_DATA__=${JSON.stringify(rawApks).replace(/</g, '\\u003c')}</script>`
   const summary = []
   const failures = []
 
   for (const route of routes) {
-    const { html: appHtml, head } = ssrModule.render(route)
+    const { html: appHtml, head, jsonld } = ssrModule.render(route)
     if (!head) {
       throw new Error(`[prerender] Missing head for route ${route}. A page lacks metadata.`)
     }
     const headBlock = buildHeadBlock(head)
-    const outHtml = injectHeadAndBody(template, headBlock, appHtml, apkDataScript)
+    const jsonldArr = Array.isArray(jsonld) ? jsonld : []
+    const jsonldBlock = buildJsonLdBlock(jsonldArr)
+    const outHtml = injectHeadAndBody(template, headBlock, jsonldBlock, appHtml, apkDataScript)
     const outFile = routeToOutFile(route)
     fs.mkdirSync(path.dirname(outFile), { recursive: true })
     fs.writeFileSync(outFile, outHtml, 'utf8')
@@ -173,6 +227,57 @@ async function main() {
     if (/Loading application/i.test(outHtml)) {
       failures.push(`${route}: contains "Loading application"`)
     }
+
+    // JSON-LD checks
+    const scriptRe = /<script\s+type=["']application\/ld\+json["'][^>]*data-seo=["']1["'][^>]*>([\s\S]*?)<\/script>/gi
+    const blocks = []
+    let sm
+    while ((sm = scriptRe.exec(outHtml))) blocks.push(sm[1])
+    let parsedBlocks = []
+    for (const b of blocks) {
+      try {
+        parsedBlocks.push(JSON.parse(b))
+      } catch {
+        failures.push(`${route}: JSON-LD block failed to parse as JSON`)
+      }
+    }
+    const forbidden = parsedBlocks.flatMap((s) => findForbidden(s))
+    if (forbidden.length) failures.push(`${route}: forbidden JSON-LD keys/types found: ${forbidden.join(', ')}`)
+
+    if (route === '/') {
+      const org = parsedBlocks.filter((s) => s['@type'] === 'Organization')
+      const web = parsedBlocks.filter((s) => s['@type'] === 'WebSite')
+      if (org.length !== 1 || web.length !== 1) failures.push(`${route}: expected exactly 1 Organization and 1 WebSite, got ${org.length}/${web.length}`)
+    }
+    if (noSchemaRoutes.has(route)) {
+      if (parsedBlocks.length !== 0) failures.push(`${route}: expected no structured data, found ${parsedBlocks.length}`)
+    }
+    if (route === '/apk-store' || route.startsWith('/apk-store/')) {
+      const crumbs = parsedBlocks.filter((s) => s['@type'] === 'BreadcrumbList')
+      if (crumbs.length !== 1) failures.push(`${route}: expected 1 BreadcrumbList, got ${crumbs.length}`)
+      const crumb = crumbs[0]
+      const visible = getVisibleBreadcrumbs(appHtml)
+      if (!crumb || !visible) {
+        failures.push(`${route}: missing breadcrumb schema or visible breadcrumbs`)
+      } else {
+        const items = Array.isArray(crumb.itemListElement) ? crumb.itemListElement : []
+        const last = items[items.length - 1]
+        const expectedLastName = route === '/apk-store' ? 'APK Store' : (appTitleBySlug.get(route.split('/').pop()) || '')
+        if (!last || String(last.name) !== expectedLastName) failures.push(`${route}: breadcrumb last item name mismatch (schema="${last?.name}" expected="${expectedLastName}")`)
+        if (visible.length !== items.length) failures.push(`${route}: visible breadcrumb count ${visible.length} != schema ${items.length}`)
+        const visibleNames = visible.map((v) => v.name)
+        const schemaNames = items.map((i) => String(i.name))
+        if (JSON.stringify(visibleNames) !== JSON.stringify(schemaNames)) failures.push(`${route}: breadcrumb names mismatch visible=${JSON.stringify(visibleNames)} schema=${JSON.stringify(schemaNames)}`)
+        const schemaUrls = items.map((i) => String(i.item || ''))
+        const expectedUrls = route === '/apk-store'
+          ? ['https://freefiremod.xyz/', 'https://freefiremod.xyz/apk-store']
+          : ['https://freefiremod.xyz/', 'https://freefiremod.xyz/apk-store', `https://freefiremod.xyz${route}`]
+        if (JSON.stringify(schemaUrls) !== JSON.stringify(expectedUrls)) failures.push(`${route}: breadcrumb URLs mismatch schema=${JSON.stringify(schemaUrls)} expected=${JSON.stringify(expectedUrls)}`)
+        if (!visible[visible.length - 1]?.current) failures.push(`${route}: last visible breadcrumb is not aria-current="page" text`)
+        if (visible.some((v, i) => i < visible.length - 1 && !v.urlPath)) failures.push(`${route}: non-last visible breadcrumb missing link`)
+      }
+    }
+
     summary.push({ route, file: path.relative(root, outFile), title: head.title, length: outHtml.length })
   }
 

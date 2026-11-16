@@ -10,6 +10,8 @@ import FeatureMarquee from '../components/FeatureMarquee.jsx'
 import FaqSection from '../components/FaqSection.jsx'
 import { ArrowUpRightIcon, ShieldIcon } from '../components/Icons.jsx'
 import { useDocumentMeta } from '../components/useDocumentMeta.js'
+import { organizationSchema, websiteSchema } from '../seo/schema.js'
+import { useStructuredData } from '../seo/useStructuredData.js'
 
 const features = [
   'Aimbot Feature Information',
@@ -26,6 +28,7 @@ export default function Home() {
     '/',
     { fullTitle: true },
   )
+  useStructuredData([organizationSchema(), websiteSchema()])
 
   useEffect(() => {
     if (!hash) return
