@@ -1,9 +1,12 @@
 ﻿import { useEffect, useState } from 'react'
 import ApkStoreCard from '../components/ApkStoreCard.jsx'
+import Breadcrumbs from '../components/Breadcrumbs.jsx'
 import { fetchApkStore, getCachedApks } from '../data/apkStore.js'
 import { useDocumentMeta } from '../components/useDocumentMeta.js'
 import useViewportWidth from '../components/useViewportWidth.js'
 import { apkColors, getApkLayout } from '../components/apkStoreStyles.js'
+import { breadcrumbSchema } from '../seo/schema.js'
+import { useStructuredData } from '../seo/useStructuredData.js'
 
 export default function ApkStorePage() {
   const [apps, setApps] = useState(() => getCachedApks() ?? [])
@@ -12,11 +15,17 @@ export default function ApkStorePage() {
   const width = useViewportWidth()
   const { isTiny, isDesktop } = getApkLayout(width)
 
+  const breadcrumbItems = [
+    { name: 'Home', path: '/' },
+    { name: 'APK Store', path: '/apk-store' },
+  ]
+
   useDocumentMeta(
     'Free Fire APK Store – Gaming Tool Listings',
     'Browse gaming APK listings with version, file size and last-updated details for each app. Review the details and risks before installing anything.',
     '/apk-store',
   )
+  useStructuredData([breadcrumbSchema(breadcrumbItems)])
 
   useEffect(() => {
     let active = true
@@ -59,6 +68,7 @@ export default function ApkStorePage() {
   return (
     <main style={pageStyle}>
       <div style={wrapStyle}>
+        <Breadcrumbs items={breadcrumbItems} />
         <h1 style={headingStyle}>Free Fire APK Store</h1>
         <p style={introStyle}>Browse gaming app listings with version, file size and last-updated details.</p>
         {loading ? <p style={stateStyle} role="status">Loading applications…</p> : null}

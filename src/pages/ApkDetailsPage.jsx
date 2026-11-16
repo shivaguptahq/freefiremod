@@ -2,12 +2,15 @@
 import { useParams } from 'react-router-dom'
 import { PackageIcon, StarIcon, TagIcon } from '../components/Icons.jsx'
 import ApkDownloadButton from '../components/ApkDownloadButton.jsx'
+import Breadcrumbs from '../components/Breadcrumbs.jsx'
 import DownloadContinueButton from '../components/DownloadContinueButton.jsx'
 import { formatLastUpdated, getApkBySlug, getCachedApks, getFallbackIcon, getFallbackScreenshot } from '../data/apkStore.js'
 import { useDocumentMeta } from '../components/useDocumentMeta.js'
 import useViewportWidth from '../components/useViewportWidth.js'
 import { apkColors, getApkLayout } from '../components/apkStoreStyles.js'
 import { buildAppDescription, buildAppTitle } from '../seo/metaHelpers.js'
+import { breadcrumbSchema, webPageSchema } from '../seo/schema.js'
+import { useStructuredData } from '../seo/useStructuredData.js'
 
 function MetadataBlock({ icon, label, value }) {
   const blockStyle = {
@@ -114,6 +117,26 @@ const { isTiny, isDesktop } = getApkLayout(width)
         : { robots: 'noindex, follow' },
   )
 
+  const breadcrumbItems = app && !error && !loading
+    ? [
+        { name: 'Home', path: '/' },
+        { name: 'APK Store', path: '/apk-store' },
+        { name: app.title, path: `/apk-store/${slug}` },
+      ]
+    : null
+  const pageTitleNoSuffix = app && !error && !loading ? buildAppTitle(app).replace(/ \| FreeFire Mods$/, '') : ''
+  const dateModified = app && !error && !loading && /^\d{4}-\d{2}-\d{2}$/.test(String(app.lastUpdated || '').trim())
+    ? String(app.lastUpdated).trim()
+    : undefined
+  useStructuredData(
+    breadcrumbItems
+      ? [
+          breadcrumbSchema(breadcrumbItems),
+          webPageSchema({ path: `/apk-store/${slug}`, name: pageTitleNoSuffix, dateModified }),
+        ]
+      : null,
+  )
+
   const pageStyle = {
     width: '100%',
     minWidth: 0,
@@ -203,6 +226,7 @@ const metaGridStyle = {
     <main style={pageStyle}>
       <div style={wrapStyle}>
         <article style={{ width: '100%', minWidth: 0 }} aria-label={`${app.title} details`}>
+          <Breadcrumbs items={breadcrumbItems} />
           <header style={heroStyle}>
             <img
               style={iconStyle}
