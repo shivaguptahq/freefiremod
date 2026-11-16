@@ -1,56 +1,13 @@
 ﻿import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { DownloadIcon, PackageIcon, StarIcon, TagIcon } from '../components/Icons.jsx'
+import { PackageIcon, StarIcon, TagIcon } from '../components/Icons.jsx'
 import ApkDownloadButton from '../components/ApkDownloadButton.jsx'
+import DownloadContinueButton from '../components/DownloadContinueButton.jsx'
 import { formatLastUpdated, getApkBySlug, getCachedApks, getFallbackIcon, getFallbackScreenshot } from '../data/apkStore.js'
 import { useDocumentMeta } from '../components/useDocumentMeta.js'
 import useViewportWidth from '../components/useViewportWidth.js'
 import { apkColors, getApkLayout } from '../components/apkStoreStyles.js'
 import { buildAppDescription, buildAppTitle } from '../seo/metaHelpers.js'
-
-function RedirectDownloadButton({ compact }) {
-  const baseStyle = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '0.45rem',
-    minHeight: compact ? 38 : 48,
-    width: '100%',
-    maxWidth: 420,
-    padding: compact ? '0.62rem 0.9rem' : '0.72rem 1rem',
-    borderRadius: 999,
-    border: '1px solid transparent',
-    font: 'inherit',
-    fontSize: compact ? '0.88rem' : '0.92rem',
-    fontWeight: 700,
-    lineHeight: 1,
-    textDecoration: 'none',
-    whiteSpace: 'nowrap',
-    boxSizing: 'border-box',
-    cursor: 'pointer',
-    background: '#2563eb',
-    color: '#f8fafc',
-    transition: 'filter 160ms ease, transform 160ms ease',
-  }
-  const wrapStyle = { width: '100%', minWidth: 0 }
-
-  return (
-    <div style={wrapStyle}>
-      <a
-        style={baseStyle}
-        href="https://ardance.org/4/16b41d6a8c2c73210625a87df50eebd2"
-        target="_blank"
-        rel="noopener"
-        aria-label="Download APK"
-        onMouseEnter={(e) => { e.currentTarget.style.filter = 'brightness(1.06)' }}
-        onMouseLeave={(e) => { e.currentTarget.style.filter = 'none' }}
-      >
-        <DownloadIcon size={compact ? 16 : 18} />
-        <span>Download APK</span>
-      </a>
-    </div>
-  )
-}
 
 function MetadataBlock({ icon, label, value }) {
   const blockStyle = {
@@ -272,7 +229,7 @@ const metaGridStyle = {
           </section>
 
           <section style={sectionStyle} aria-label="Download">
-            <RedirectDownloadButton compact={isTiny} />
+            <DownloadContinueButton compact={isTiny} />
           </section>
 
           <section style={sectionStyle} aria-label={`${app.title} screenshots`}>
@@ -315,7 +272,7 @@ const metaGridStyle = {
             <p style={updatedStyle}>{formatLastUpdated(app.lastUpdated)}</p>
           </section>
 
-          <section style={sectionStyle} aria-label="Download">
+          <section style={sectionStyle} aria-label="Download" id="real-download">
             <ApkDownloadButton app={app} />
           </section>
         </article>

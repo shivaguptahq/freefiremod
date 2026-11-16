@@ -11,7 +11,7 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage.jsx'
 import DisclaimerPage from './pages/DisclaimerPage.jsx'
 import DmcaPage from './pages/DmcaPage.jsx'
 import { initBackgroundAudio } from './components/backgroundAudio.js'
-import { loadPopunder, loadSocialBar } from './components/adManager.js'
+import { loadPopunderOnce, loadSocialBarOnce } from './components/adManager.js'
 
 function LegacyStoreRedirect() {
   const { slug } = useParams()
@@ -30,23 +30,21 @@ function SpaRedirect() {
   return null
 }
 
-// Social Bar: homepage + individual app detail pages. Popunder: homepage.
+// Route-aware ad loader (single decision point).
+// Popunder: once per session on "/" and once per session on "/apk-store" listing.
+// Social bar: once per session total on "/" and on "/apk-store/<slug>" detail routes.
 function AdLoader() {
   const { pathname } = useLocation()
 
   useEffect(() => {
-    const isHome = pathname === '/' || pathname === ''
-    const isAppDetail = /^\/apk-?store\/[^/]+$/.test(pathname)
-    if (isHome || isAppDetail) {
-      loadSocialBar().catch(() => {
-        // Ad provider unavailable; do not break the page.
-      })
-    }
-    if (isHome) {
-      loadPopunder().catch(() => {
-        // Ad provider unavailable; do not break the page.
-      })
-    }
+    const normalized = pathname === '/' ? '/' : pathname.replace(/\/+$/, '') || '/'
+    const isHome = normalized === '/'
+    const isStoreListing = normalized === '/apk-store'
+    const isAppDetail = /^\/apk-store\/[^/]+$/.test(normalized)
+
+    if (isHome) loadPopunderOnce('home')
+    if (isStoreListing) loadPopunderOnce('store')
+    if (isHome || isAppDetail) loadSocialBarOnce()
   }, [pathname])
 
   return null

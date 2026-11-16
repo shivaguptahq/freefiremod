@@ -4,7 +4,6 @@ import { fetchApkStore, getCachedApks } from '../data/apkStore.js'
 import { useDocumentMeta } from '../components/useDocumentMeta.js'
 import useViewportWidth from '../components/useViewportWidth.js'
 import { apkColors, getApkLayout } from '../components/apkStoreStyles.js'
-import { loadPopunder } from '../components/adManager.js'
 
 export default function ApkStorePage() {
   const [apps, setApps] = useState(() => getCachedApks() ?? [])
@@ -18,12 +17,6 @@ export default function ApkStorePage() {
     'Browse gaming APK listings with version, file size and last-updated details for each app. Review the details and risks before installing anything.',
     '/apk-store',
   )
-
-  useEffect(() => {
-    loadPopunder().catch(() => {
-      // Ad provider unavailable; do not break the page.
-    })
-  }, [])
 
   useEffect(() => {
     let active = true
